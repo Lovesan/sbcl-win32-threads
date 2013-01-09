@@ -219,7 +219,7 @@
  ;; As of SBCL 1.0.33.26, threads are part of the default build on
  ;; x86oid Linux. Other platforms that support them include
  ;; x86oid Darwin, FreeBSD, and Solaris.
- ; :sb-thread
+ :sb-thread
  ;
  ; This unofficial branch of SBCL for Windows fully supports callbacks when they happen
  ; in threads previously unkown to Lisp.
