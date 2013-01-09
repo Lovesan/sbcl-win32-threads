@@ -35,7 +35,7 @@ generate_version() {
     fi
     if [ -z "$SBCL_BUILDING_RELEASE_FROM" ]
     then
-        if [ "`git rev-list HEAD --not origin/mswin`" = '' ]
+        if [ "`git rev-list HEAD --not origin/master`" = '' ]
         then
             # If origin/master contains all the commits on current
             # branch, use current head as the root instead.
@@ -97,7 +97,7 @@ EOF
         echo "head=$version_head"
         printf "\"%s.%s.%s.%s%s%s-%s\"\n" \
             $version_release $version_n_root \
-            $version_branchname $version_n_branch \
+            "lvsn" $version_n_branch \
             $version_hash $version_dirty $version_arch >>version.lisp-expr
     fi
 }
