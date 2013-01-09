@@ -35,7 +35,7 @@ generate_version() {
     fi
     if [ -z "$SBCL_BUILDING_RELEASE_FROM" ]
     then
-        if [ "`git rev-list HEAD --not origin/master`" = '' ]
+        if [ "`git rev-list HEAD --not origin/mswin`" = '' ]
         then
             # If origin/master contains all the commits on current
             # branch, use current head as the root instead.
@@ -46,7 +46,10 @@ generate_version() {
     else
         version_root="$SBCL_BUILDING_RELEASE_FROM"
     fi
-    version_base=`git rev-parse "$version_root"`
+    # !!!  This fork requires remote named `sbcl' to be present !!! #
+    # !!!      and to point to original SBCL repo               !!! #
+    sbcl_commits=`git log --pretty=format:%H sbcl/master`
+    version_base=`git log --pretty=format:%H | grep -Fx "$sbcl_commits" | head -n1`
     version_tag=`git describe --tags --match="sbcl*" --abbrev=0 $version_base`
     version_release=`echo $version_tag | sed -e 's/sbcl[_-]//' | sed -e 's/_/\./g'`
     # Using wc -l instead of --count argument to rev-list because
@@ -65,6 +68,13 @@ generate_version() {
     else
         version_dirty="-dirty"
     fi
+    case `uname -m` in
+      *86) version_arch=x86 ;;
+      i86pc) version_arch=x86 ;;
+      *x86_64) version_arch=x86-64 ;;
+      amd64) version_arch=x86-64 ;;
+      *) error "Unknown machine type" ;;
+    esac
     # Now that we have all the pieces, put them together.
     cat >version.lisp-expr <<EOF
 ;;; This file is auto-generated using generate-version.sh. Every time
@@ -75,19 +85,19 @@ EOF
     then
         if [ "0" = "$version_n_root" ]
         then
-            printf "\"%s%s\"\n" \
-                $version_release $version_dirty >>version.lisp-expr
+            printf "\"%s%s-%s\"\n" \
+                $version_release $version_dirty $version_arch >>version.lisp-expr
         else
-            printf "\"%s.%s%s%s\"\n" \
+            printf "\"%s.%s%s%s-%s\"\n" \
                 $version_release $version_n_root \
-                $version_hash $version_dirty >>version.lisp-expr
+                $version_hash $version_dirty $version_arch >>version.lisp-expr
         fi
     else
         echo "base=$version_base"
         echo "head=$version_head"
-        printf "\"%s.%s.%s.%s%s%s\"\n" \
+        printf "\"%s.%s.%s.%s%s%s-%s\"\n" \
             $version_release $version_n_root \
             $version_branchname $version_n_branch \
-            $version_hash $version_dirty >>version.lisp-expr
+            $version_hash $version_dirty $version_arch >>version.lisp-expr
     fi
 }

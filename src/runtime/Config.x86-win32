@@ -56,7 +56,7 @@ CFLAGS =  -g -W -Wall \
 
 OS_LINK_FLAGS = 
 ifdef LISP_FEATURE_SB_CORE_COMPRESSION
-  OS_LIBS += -lz
+  OS_LIBS += -Wl,-Bstatic,-lz
 endif
 
 GC_SRC = gencgc.c
