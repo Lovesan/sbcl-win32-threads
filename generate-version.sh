@@ -69,10 +69,10 @@ generate_version() {
         version_dirty="-dirty"
     fi
     case `uname -m` in
-      *86) version_arch=x86 ;;
-      i86pc) version_arch=x86 ;;
-      *x86_64) version_arch=x86-64 ;;
-      amd64) version_arch=x86-64 ;;
+      *86) version_arch='-x86' ;;
+      i86pc) version_arch='-x86' ;;
+      *x86_64) version_arch='-x86-64' ;;
+      amd64) version_arch='-x86-64' ;;
       *) error "Unknown machine type" ;;
     esac
     # Now that we have all the pieces, put them together.
@@ -85,17 +85,17 @@ EOF
     then
         if [ "0" = "$version_n_root" ]
         then
-            printf "\"%s%s-%s\"\n" \
+            printf "\"%s%s%s\"\n" \
                 $version_release $version_dirty $version_arch >>version.lisp-expr
         else
-            printf "\"%s.%s%s%s-%s\"\n" \
+            printf "\"%s.%s%s%s%s\"\n" \
                 $version_release $version_n_root \
                 $version_hash $version_dirty $version_arch >>version.lisp-expr
         fi
     else
         echo "base=$version_base"
         echo "head=$version_head"
-        printf "\"%s.%s.%s.%s%s%s-%s\"\n" \
+        printf "\"%s.%s.%s.%s%s%s%s\"\n" \
             $version_release $version_n_root \
             "lvsn" $version_n_branch \
             $version_hash $version_dirty $version_arch >>version.lisp-expr
